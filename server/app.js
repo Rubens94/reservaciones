@@ -4,6 +4,9 @@ const  db = require('./config/db');
 
 port = process.env.PORT;
 
+// Import models
+require('./models/users');
+
 // DB Connection
 db.sync()
     .then(() => console.log('DB runing'))
