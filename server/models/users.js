@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
 const db = require('../config/db');
 const Role = require('./roles');
-const bcrypt = require('bcrypt-nodejs');
+const bcrypt = require('bcrypt');
 
-const Usuers = db.define('users', {
+const Users = db.define('users', {
     id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
