@@ -6,6 +6,7 @@ port = process.env.PORT;
 
 // Import models
 require('./models/users');
+require('./models/roles');
 
 // DB Connection
 db.sync()
