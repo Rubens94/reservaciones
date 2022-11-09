@@ -10,6 +10,7 @@ const userRouter = require('./routes/users');
 // Import models
 require('./models/users');
 require('./models/roles');
+require('./models/rooms');
 
 // DB Connection
 db.sync()
