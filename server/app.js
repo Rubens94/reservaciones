@@ -5,6 +5,7 @@ const  db = require('./config/db');
 
 port = process.env.PORT;
 
+const bookingRouter = require('./routes/bookings');
 const roomRouter = require('./routes/rooms');
 const userRouter = require('./routes/users');
 
@@ -25,6 +26,7 @@ app.use(cors());
 app.use(express.json());
 app.use( express.urlencoded({extended: true}) );
 
+app.use('/api/bookings', bookingRouter);
 app.use('/api/rooms', roomRouter);
 app.use('/api/users', userRouter);
 
