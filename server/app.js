@@ -5,6 +5,7 @@ const  db = require('./config/db');
 
 port = process.env.PORT;
 
+const roomRouter = require('./routes/rooms');
 const userRouter = require('./routes/users');
 
 // Import models
@@ -23,6 +24,7 @@ app.use(cors());
 app.use(express.json());
 app.use( express.urlencoded({extended: true}) );
 
+app.use('/api/rooms', roomRouter);
 app.use('/api/users', userRouter);
 
 app.listen( port, () => {
