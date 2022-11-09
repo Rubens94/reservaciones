@@ -9,6 +9,7 @@ const roomRouter = require('./routes/rooms');
 const userRouter = require('./routes/users');
 
 // Import models
+require('./models/bookings');
 require('./models/users');
 require('./models/roles');
 require('./models/rooms');
