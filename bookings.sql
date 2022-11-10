@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 09-11-2022 a las 16:28:57
+-- Tiempo de generación: 10-11-2022 a las 04:00:45
 -- Versión del servidor: 5.7.36
 -- Versión de PHP: 8.1.0
 
@@ -34,6 +34,8 @@ CREATE TABLE `bookings` (
   `start` datetime DEFAULT NULL,
   `end` datetime DEFAULT NULL,
   `observations` varchar(255) DEFAULT NULL,
+  `job_start` varchar(255) DEFAULT NULL,
+  `job_end` varchar(255) DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -57,8 +59,8 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`id`, `name`, `description`, `createdAt`, `updatedAt`) VALUES
-(1, 'Admin', 'Admin role', '2022-11-09 10:22:00', '2022-11-09 10:22:00'),
-(2, 'User', 'User role', '2022-11-09 10:22:00', '2022-11-09 10:22:00');
+(1, 'Admin', 'Admin role', '2022-11-09 21:57:00', '2022-11-09 21:57:00'),
+(2, 'User', 'User role', '2022-11-09 21:57:00', '2022-11-09 21:57:00');
 
 -- --------------------------------------------------------
 
@@ -98,7 +100,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `lastname`, `roleId`, `email`, `password`, `createdAt`, `updatedAt`) VALUES
-(1, 'admin', 'administrator', 1, 'admin@admin.com', '$2b$10$43SuFN4F.bXtdC1IaSCQ.uDhubnRQpotGjGIi1xFyWsUzGjR7T0XS', '2022-11-09 11:23:17', '2022-11-09 11:23:17');
+(1, 'admin', 'Administrator', 1, 'admin@admin.com', '$2b$10$2q22rijEVs.UCiZXt9FnJ.7SrVIwtG2gh6RctcsU2ZDKs8ZscdNEm', '2022-11-09 21:58:28', '2022-11-09 21:58:28');
 
 --
 -- Índices para tablas volcadas
