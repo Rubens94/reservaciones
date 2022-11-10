@@ -16,7 +16,6 @@ class UserController {
             await Users.create({
                 name,
                 lastname,
-                roleId: 2,
                 email,
                 password
             });
@@ -142,6 +141,37 @@ class UserController {
         }
 
         res.status(httpCodes.OK).json({msg: 'Deleted user'});
+    }
+
+    static async createUsersByAdmin(req, res) {
+        const token = req.headers.authorization.split(' ')[1];
+        const userToken = jwt.verify(token, process.env.JWT_SECRET);
+
+        const admin = await Users.findOne({ where: { 'id':userToken.id } });
+        
+        if( admin.roleId !== 1 ) return res.status(httpCodes.FORBIDDEN).json({ msg: 'Access denied'});
+
+        const { name, lastname, roleId, email, password } = req.body;
+
+        try {
+            const user = await Users.findOne({ where: { email } });
+    
+            if( user ) return res.status(httpCodes.BAD_REQUEST).json({msg: 'the email already exists, try with another.'});
+            
+            await Users.create({
+                name,
+                lastname,
+                roleId,
+                email,
+                password
+            });
+        } catch (err) {
+            res.status(httpCodes.INTERNAL_SERVER_ERROR).json({msg: 'Server error, contact administrator'});
+        }
+
+        res.status(httpCodes.OK).json({
+            msg: 'User created'
+        });
     }
 }
 

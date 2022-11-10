@@ -28,7 +28,8 @@ const Users = db.define('users', {
         }
     },
     roleId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        defaultValue: 2
     },
     email: {
         type: Sequelize.STRING(60),
