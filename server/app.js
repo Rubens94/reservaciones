@@ -5,6 +5,7 @@ const  db = require('./config/db');
 
 port = process.env.PORT;
 
+const adminRouter = require('./routes/admin');
 const bookingRouter = require('./routes/bookings');
 const roomRouter = require('./routes/rooms');
 const userRouter = require('./routes/users');
@@ -29,6 +30,7 @@ app.use( express.urlencoded({extended: true}) );
 app.use('/api/bookings', bookingRouter);
 app.use('/api/rooms', roomRouter);
 app.use('/api/users', userRouter);
+app.use('/api/admin', adminRouter);
 
 app.listen( port, () => {
     console.log(`Server runing at port: ${ port }`);

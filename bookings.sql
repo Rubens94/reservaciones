@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 10-11-2022 a las 04:00:45
+-- Tiempo de generación: 10-11-2022 a las 18:16:34
 -- Versión del servidor: 5.7.36
 -- Versión de PHP: 8.1.0
 
@@ -59,8 +59,8 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`id`, `name`, `description`, `createdAt`, `updatedAt`) VALUES
-(1, 'Admin', 'Admin role', '2022-11-09 21:57:00', '2022-11-09 21:57:00'),
-(2, 'User', 'User role', '2022-11-09 21:57:00', '2022-11-09 21:57:00');
+(1, 'Admin', 'Admin role', '2022-11-10 12:11:00', '2022-11-10 12:11:00'),
+(2, 'User', 'User role', '2022-11-10 12:11:00', '2022-11-10 12:11:00');
 
 -- --------------------------------------------------------
 
@@ -88,7 +88,7 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `name` varchar(60) NOT NULL,
   `lastname` varchar(60) NOT NULL,
-  `roleId` int(11) DEFAULT NULL,
+  `roleId` int(11) DEFAULT '2',
   `email` varchar(60) NOT NULL,
   `password` varchar(60) NOT NULL,
   `createdAt` datetime NOT NULL,
@@ -100,7 +100,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `lastname`, `roleId`, `email`, `password`, `createdAt`, `updatedAt`) VALUES
-(1, 'admin', 'Administrator', 1, 'admin@admin.com', '$2b$10$2q22rijEVs.UCiZXt9FnJ.7SrVIwtG2gh6RctcsU2ZDKs8ZscdNEm', '2022-11-09 21:58:28', '2022-11-09 21:58:28');
+(1, 'Admin', 'Administrator', 1, 'admin@admin.com', '$2b$10$fR1l4X3YOcGbtwWmnvSTjOLJhHeI0kmBl376fskKE..L6fzrbzZju', '2022-11-10 12:13:52', '2022-11-10 12:13:52');
 
 --
 -- Índices para tablas volcadas
