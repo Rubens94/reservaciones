@@ -23,6 +23,12 @@ const Bookings = db.define('bookings', {
     },
     observations: {
         type: Sequelize.STRING
+    },
+    job_start: {
+        type: Sequelize.STRING
+    },
+    job_end: {
+        type: Sequelize.STRING
     }
 });
 

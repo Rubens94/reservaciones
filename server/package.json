@@ -19,7 +19,8 @@
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.3.3",
     "node-schedule": "^2.1.0",
-    "sequelize": "^6.25.4"
+    "sequelize": "^6.25.4",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

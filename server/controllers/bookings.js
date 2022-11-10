@@ -8,6 +8,7 @@ const Room = require('../models/rooms');
 const Users = require('../models/users');
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
+const { uuid } = require('uuidv4');
 
 class BookingController {
     static async createBooking(req, res){
@@ -44,31 +45,84 @@ class BookingController {
             console.log(reservations[i].start);
             if(new Date(start) >= new Date(reservations[i].start +1) && new Date(start) <= new Date(reservations[i].end +1) || new Date(end) >= new Date(reservations[i].start +1) && new Date(end) <= new Date(reservations[i].end +1)) return res.status(httpCodes.NOT_FOUND).json({ msg: `The room is already reserved from ${reservations[i].start.substr(11,16)} to ${reservations[i].end.substr(11,16)}. Book another time.`});
         }
-
+        const job_start = uuid();
+        const job_end = uuid();
         await Bookings.create({
             roomId,
             userId: id,
             start,
             end,
-            observations
+            observations,
+            job_start,
+            job_end
         });
 
         const startDate = new Date(start);
         const endDate = new Date(end);
 
-        schedule.scheduleJob(startDate, async () => {
+        schedule.scheduleJob(job_start, startDate, async () => {
             room.update({
                 reserved: 1
             });
         });
 
-        schedule.scheduleJob(endDate, async () => {
+        schedule.scheduleJob(job_end, endDate, async () => {
             room.update({
                 reserved: 0
             });
         });
 
         res.status(httpCodes.OK).json({ msg: 'Room reserved' });
+    }
+
+    static async updateBookingById(req, res){
+        const token = req.headers.authorization.split(' ')[1];
+        const userToken = jwt.verify(token, process.env.JWT_SECRET);
+        const { id,  end } = req.body;
+
+        const booking = await Bookings.findOne({ where: { id } });
+        const { name } = await Role.findOne({ where: { 'id': userToken.id } });
+        
+        if(!booking) return res.status(httpCodes.NOT_FOUND).json({ msg: 'Booking not found' });
+        if(booking.userId !== userToken.id && name !== 'Admin') return res.status(httpCodes.FORBIDDEN).json({ msg: 'Access denied'});
+
+        const room = await Room.findOne({ where: { 'id': booking.roomId } });
+        if(!room) return res.status(httpCodes.NOT_FOUND).json({ msg: 'Room not found' });
+
+        schedule.cancelJob(booking.job_end);
+
+        const endDate = new Date(end);
+        const job_end = uuid();
+        schedule.scheduleJob(job_end, endDate, async () => {
+            room.update({
+                reserved: 0,
+            });
+        });
+        
+        booking.update({
+            end,
+            job_end
+        });
+
+        res.status(httpCodes.OK).json({ msg: 'Booking modified'});
+    }
+
+    static async deleteBookingById(req, res){
+        const token = req.headers.authorization.split(' ')[1];
+        const userToken = jwt.verify(token, process.env.JWT_SECRET);
+        const { id } = req.params;
+
+        const booking = await Bookings.findOne({ where: { id } });
+        const { name } = await Role.findOne({ where: { 'id': userToken.id } });
+
+        if(!booking) return res.status(httpCodes.NOT_FOUND).json({ msg: 'Booking not found' });
+        if(booking.userId !== userToken.id && name !== 'Admin') return res.status(httpCodes.FORBIDDEN).json({ msg: 'Access denied'});
+
+        schedule.cancelJob(booking.job_start);
+        schedule.cancelJob(booking.job_end);
+
+        booking.destroy();
+        res.status(httpCodes.OK).json({ msg: 'Booking deleted'});
     }
 }
 
