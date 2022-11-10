@@ -23,3 +23,5 @@ router.put('/', [
 ], BookingController.updateBookingById);
 
 router.delete('/:id', [jwtVerify], BookingController.deleteBookingById);
+
+router.get('/', BookingController.getBookings);

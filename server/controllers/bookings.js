@@ -124,6 +124,174 @@ class BookingController {
         booking.destroy();
         res.status(httpCodes.OK).json({ msg: 'Booking deleted'});
     }
+
+    static async getBookings(req, res){
+        const { start, end, roomId} = req.query;
+        let page = Number.parseInt(req.query.page);
+        const roomsPerPage = 100;
+        if(!page || page <= 0) {
+            page = 1;
+        }
+
+        if( start && end ) {
+            const firstDate = `${start} 00:00:00`;
+            const secondDate = `${end} 23:59:59`;
+            let bookings;
+            let total;
+            let back;
+            let next;
+            let pages;
+            const roomsPerPage = 100;
+            if( roomId ) {
+                bookings = await Bookings.findAll({
+                    limit: roomsPerPage,
+                    offset: roomsPerPage * (page-1),
+                    attributes: [
+                        'id', 
+                        'roomId', 
+                        'userId', 
+                        [Sequelize.fn("DATE_FORMAT", Sequelize.col("start"), "%Y-%m-%d %H:%i:%s"), "start"], 
+                        [Sequelize.fn("DATE_FORMAT", Sequelize.col("end"), "%Y-%m-%d %H:%i:%s"), "end"], 
+                        'observations' 
+                    ],
+                    where : {
+                        roomId,
+                        'start': {
+                            [Op.between] : [firstDate, secondDate]
+                        }
+                    }
+                });
+                total = await Bookings.count({
+                    attributes: [
+                        'id', 
+                        'roomId', 
+                        'userId', 
+                        [Sequelize.fn("DATE_FORMAT", Sequelize.col("start"), "%Y-%m-%d %H:%i:%s"), "start"], 
+                        [Sequelize.fn("DATE_FORMAT", Sequelize.col("end"), "%Y-%m-%d %H:%i:%s"), "end"], 
+                        'observations' 
+                    ],
+                    where : {
+                        roomId,
+                        'start': {
+                            [Op.between] : [firstDate, secondDate]
+                        }
+                    }
+                });
+
+                pages = Math.ceil(total / roomsPerPage);
+
+                if(page == 1){
+                    back = `${process.env.HOST}/api/bookings?page=1&start=${start}&end=${end}&roomId=${roomId}`;
+                } else {
+                    back = `${process.env.HOST}/api/bookings?page=${page - 1}&start=${start}&end=${end}&roomId=${roomId}`;
+                }
+
+                if(page >= pages) {
+                    next = `${process.env.HOST}/api/bookings?page=${pages}&start=${start}&end=${end}&roomId=${roomId}`;
+                } else {
+                    next = `${process.env.HOST}/api/bookings?page=${page + 1}&start=${start}&end=${end}&roomId=${roomId}`;
+                }
+
+            } else {
+                bookings = await Bookings.findAll({
+                    limit: roomsPerPage,
+                    offset: roomsPerPage * (page-1),
+                    attributes: [
+                        'id', 
+                        'roomId', 
+                        'userId', 
+                        [Sequelize.fn("DATE_FORMAT", Sequelize.col("start"), "%Y-%m-%d %H:%i:%s"), "start"], 
+                        [Sequelize.fn("DATE_FORMAT", Sequelize.col("end"), "%Y-%m-%d %H:%i:%s"), "end"], 
+                        'observations' 
+                    ],
+                    where : {
+                        'start': {
+                            [Op.between] : [firstDate, secondDate]
+                        }
+                    }
+                });
+                total = await Bookings.count({
+                    attributes: [
+                        'id', 
+                        'roomId', 
+                        'userId', 
+                        [Sequelize.fn("DATE_FORMAT", Sequelize.col("start"), "%Y-%m-%d %H:%i:%s"), "start"], 
+                        [Sequelize.fn("DATE_FORMAT", Sequelize.col("end"), "%Y-%m-%d %H:%i:%s"), "end"], 
+                        'observations' 
+                    ],
+                    where : {
+                        'start': {
+                            [Op.between] : [firstDate, secondDate]
+                        }
+                    }
+                });
+
+                pages = Math.ceil(total / roomsPerPage);
+
+                if(page == 1){
+                    back = `${process.env.HOST}/api/bookings?page=1&start=${start}&end=${end}`;
+                } else {
+                    back = `${process.env.HOST}/api/bookings?page=${page - 1}&start=${start}&end=${end}`;
+                }
+
+                if(page >= pages) {
+                    next = `${process.env.HOST}/api/bookings?page=${pages}&start=${start}&end=${end}`;
+                } else {
+                    next = `${process.env.HOST}/api/bookings?page=${page + 1}&start=${start}&end=${end}`;
+                }
+            }
+
+            if (!bookings.length) return res.status(httpCodes.NOT_FOUND).json({ msg: 'unregistered bookings'});
+
+            res.status(httpCodes.OK).json({
+                total,
+                pages,
+                back,
+                next,
+                bookings
+            });
+        } else {
+            const bookings = await Bookings.findAll({
+                limit: roomsPerPage,
+                offset: roomsPerPage * (page-1),
+                attributes: [
+                    'id', 
+                    'roomId', 
+                    'userId', 
+                    [Sequelize.fn("DATE_FORMAT", Sequelize.col("start"), "%Y-%m-%d %H:%i:%s"), "start"], 
+                    [Sequelize.fn("DATE_FORMAT", Sequelize.col("end"), "%Y-%m-%d %H:%i:%s"), "end"], 
+                    'observations' 
+                ]
+            });
+            if (!bookings.length) return res.status(httpCodes.NOT_FOUND).json({ msg: 'unregistered bookings'});
+
+            let back;
+            let next;
+
+            const total = await Bookings.count();
+            const pages = Math.ceil(total / roomsPerPage);
+
+            if(page == 1){
+                back = `${process.env.HOST}/api/bookings?page=1`;
+            } else {
+                back = `${process.env.HOST}/api/bookings?page=${page - 1}`;
+            }
+
+            if(page >= pages) {
+                next = `${process.env.HOST}/api/bookings?page=${pages}`;
+            } else {
+                next = `${process.env.HOST}/api/bookings?page=${page + 1}`;
+            }
+
+            res.status(httpCodes.OK).json({
+                total,
+                pages,
+                back,
+                next,
+                bookings
+            });
+        }
+    }
 }
 
 module.exports = BookingController;
