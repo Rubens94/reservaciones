@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const sinon = require("sinon");
 const UserController = require('../controllers/users');
 const Users = require('../models/users');
-const Role = require('../models/roles');
+const jwt = require("jsonwebtoken");
 
 describe('Users workflow tests', () => {
     const userOne = {
@@ -127,5 +127,23 @@ describe('Users workflow tests', () => {
             expect(json.args[0][0].msg).to.equal('wrong password');
         });
 
+        it('GET /api/users: should send a user', async() => {
+            req = {
+                headers: {authorization: 'Bearer token'},
+            };
+            let decodedPayload ={
+                id: userThree.id,
+                roleId: userThree.roleId 
+            };
+            const stubToken = sinon.stub(jwt, 'verify').returns(decodedPayload);
+            let stub = sinon.stub(Users, 'findOne').returns(userThree);
+            await UserController.getUserWithJWT( req, res );
+            expect(stubToken.calledOnce).to.be.true;
+            expect(stub.calledOnce).to.be.true;
+            expect(status.calledOnce).to.be.true;
+            expect(status.args[0][0]).to.equal(200);
+            expect(json.calledOnce).to.be.true;
+            expect(json.args[0][0].user).to.equal(userThree);
+        });
     });
 });
